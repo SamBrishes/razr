@@ -2,8 +2,8 @@
 
 require __DIR__.'/autoload.php';
 
-use Razr\Engine;
-use Razr\Loader\FilesystemLoader;
+use Harx\Harx;
+use Harx\Loader\FilesystemLoader;
 
 // simple array
 $array = array();
@@ -19,13 +19,13 @@ $object->artist = array('name' => 'The Beatles', 'homepage' => 'http://www.thebe
 $article = new Article('My article', 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', 'Me');
 
 // render template
-$razr = new Engine(new FilesystemLoader(__DIR__));
+$harx = new Harx(new FilesystemLoader(__DIR__));
 
 function hello($str) { echo "Hello ".$str; };
 
 // $razr->addFunction('hello', 'hello');
 
-echo $razr->render('template.razr', array(
+echo $harx->render('template.razr', array(
     'name'    => 'World',
     'pi'      => 3.14159265359,
     'number'  => -5,

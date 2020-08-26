@@ -1,26 +1,49 @@
 {
-    "name": "pagekit/razr",
-    "description": "Razr - The powerful PHP template engine",
-    "keywords": ["templating", "pagekit"],
-    "homepage": "http://pagekit.com",
-    "license": "MIT",
+    "name": "pytesNET/Harx",
+    "type": "library",
+    "version": "0.1.0",
+    "description": "Harx - A PHP 7.2-written HTML annotated rendering engine (Fork of pagekit/razr).",
+    "keywords": [
+        "template",
+        "templating",
+        "render",
+        "rendering",
+        "HTML",
+        "harx",
+        "larx",
+        "pytesNET"
+    ],
+
+    "homepage": "http://harx.io",
+    "support": {
+        "email": "info@pytes.net",
+        "issues": "https://www.github.com/pytesNET/harx/issues",
+        "docs": "https://www.harx.io/docs",
+        "rss": "https://www.harx.io/rss"
+    },
+
     "authors": [
         {
+            "name": "pytesNET",
+            "email": "info@pytes.net",
+            "homepage": "https://www.pytes.net",
+            "role": "Developer"
+        },
+        {
             "name": "Pagekit Team",
-            "email": "info@pagekit.com"
+            "email": "info@pagekit.com",
+            "role": "Developer (Fork)"
         }
     ],
+    "license": "MIT",
+
     "require": {
-        "php": ">=5.3.3"
+        "php": ">=7.2.0"
     },
     "autoload": {
         "psr-4": {
-            "Razr\\": "src"
-        }
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "0.9-dev"
+            "Harx\\": "src/Harx/",
+            "Larx\\": "src/Larx/"
         }
     },
     "minimum-stability": "dev"
