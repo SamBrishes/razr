@@ -14,13 +14,15 @@
  */
     namespace Harx\Storage;
 
-    class StringStorage extends Storage
-    {
-        /**
-         * @{inheritdoc}
+
+    class StringStorage extends Storage {
+        /*
+         |  GET TEMPLATE CONTENT
+         |  @since  0.1.0
+         |
+         |  @return string  The template content as string.
          */
-        public function getContent()
-        {
+        public function getContent(): string {
             return $this->template;
         }
     }

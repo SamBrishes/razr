@@ -16,17 +16,23 @@
 
     use Harx\Harx;
 
-    interface ExtensionInterface
-    {
-        /**
-         * Gets the name.
-         *
-         * @return string
-         */
-        public function getName();
 
-        /**
-         * Initializes the extension.
+    interface ExtensionInterface {
+        /*
+         |  GET EXTENSION NAME
+         |  @since  0.1.0
+         |
+         |  @return string  The extension na,e.
          */
-        public function initialize(Harx $engine);
+        public function getName(): string;
+
+        /*
+         |  INITIALIZE EXTENSION
+         |  @since  0.1.0
+         |
+         |  @param  object  The Harx engine instance.
+         |
+         |  @return void
+         */
+        public function initialize(Harx $engine): void;
     }

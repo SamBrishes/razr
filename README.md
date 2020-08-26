@@ -107,10 +107,18 @@ support the future used `.hxht` (**h**ar**x** **ht**ml) extension.
 ### Syntax
 
 - [@( )](https://harx.io/docs/@)
+- [@e( )](https://harx.io/docs/@e)
+- [@escape( )](https://harx.io/docs/@escape)
 - [@raw( )](https://harx.io/docs/@raw)
 - [@dump( )](https://harx.io/docs/@dump)
+- [@json( )](https://harx.io/docs/@json)
+- [@upper( )](https://harx.io/docs/@upper)
+- [@lower( )](https://harx.io/docs/@lower)
+- [@format( )](https://harx.io/docs/@format)
+- [@replace( )](https://harx.io/docs/@replace)
 - [@set( )](https://harx.io/docs/@set)
 - [@get( )](https://harx.io/docs/@get)
+- [@constant( )](https://harx.io/docs/@constant)
 - [@if( ) - @elif( ) - @else( ) - @endif( )](https://harx.io/docs/@if)
 - [@while( ) - @endwhile( )](https://harx.io/docs/@while)
 - [@for( ) - @endfor( )](https://harx.io/docs/@for)
