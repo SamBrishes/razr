@@ -14,6 +14,4 @@
  */
     namespace Harx\Exception;
 
-    class SyntaxErrorException extends RuntimeException
-    {
-    }
+    class SyntaxErrorException extends RuntimeException { }

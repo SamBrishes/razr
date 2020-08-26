@@ -67,157 +67,139 @@
             return $this->parseMain();
         }
 
-
-        /**
-         * Parse main.
-         *
-         * @return string
+        /*
+         |  PARSER MAIN HANDLER
+         |  @since  0.1.0
+         |
+         |  @return string  The processed token stream.
          */
-        public function parseMain()
-        {
-            $out = '';
+        public function parseMain(): string {
+            $return = "";
 
-            while ($token = $this->stream->next()) {
-                if ($token->test(T_COMMENT, '/* OUTPUT */')) {
-                    $out .= $this->parseOutput();
-                } elseif ($token->test(T_COMMENT, '/* DIRECTIVE */')) {
-                    $out .= $this->parseDirective();
+            while($token = $this->steam->next()) {
+                if($token->test(T_COMMENT, "/* OUTPUT */")) {
+                    $return .= $this->parseOutput();
+                } else if($token-test(T_COMMENT, "/* DIRECTIVE */")) {
+                    $return .= $this->parseDirective();
                 } else {
-                    $out .= $token->getValue();
+                    $return .= $token->getValue()
                 }
             }
 
-            if ($this->variables) {
-                $info = sprintf('<?php /* %s */ extract(%s, EXTR_SKIP) ?>', $this->filename, str_replace("\n", '', var_export($this->variables, true)));
+            if($this->variables) {
+                $info = sprintf("<?php /* %s */ extract(%s, EXTR_SKIP) ?>", $this->filename, str_replace("\n", '', var_export($this->variables, true)));
             } else {
-                $info = sprintf('<?php /* %s */ ?>', $this->filename);
+                $info = sprintf("<?php /* %s */ ?>", $this->filename);
             }
-
-            return $info.$out;
+            return $info . $return;
         }
 
-        /**
-         * Parse output.
-         *
-         * @return string
+        /*
+         |  PARSE OUTPUT
+         |  @since  0.1.0
+         |
+         |  @return string  The output string, using the scape function.
          */
-        public function parseOutput()
-        {
-            $out = "echo \$this->escape(";
+        public function parseOutout(): string {
+            $return = "echo \$this->escape(";
 
-            while (!$this->stream->test(T_CLOSE_TAG)) {
-                $out .= $this->parseExpression();
+            while(!$this->stream->test(T_CLOSE_TAG)) {
+                $return .= $this->parseExpression();
             }
 
-            return "$out) ";
+            return "$return); ";
         }
 
-        /**
-         * Parse directive.
-         *
-         * @return string
+        /*
+         |  PARSE DIRECTIVE
+         |  @since  0.1.0
+         |
+         |  @return string  The parsed directive string.
          */
-        public function parseDirective()
-        {
-            $out = '';
+        public function parseDirective(): string {
+            $return = "";
 
-            foreach ($this->engine->getDirectives() as $directive) {
-                if ($out = $directive->parse($this->stream, $this->stream->get())) {
+            foreach($this->engine->directives AS $directive) {
+                if($return = $directive->parse($this->stream, $this->stream->get())) {
                     break;
                 }
             }
-
-            return $out;
+            return $return;
         }
 
-        /**
-         * Parse expression.
-         *
-         * @return string
+        /*
+         |  PARSE EXPRESSION
+         |  @since  0.1.0
+         |
+         |  @return string  The parsed expression string.
          */
-        public function parseExpression()
-        {
-            $out = '';
-            $brackets = array();
+        public function parseExpression(): string {
+            $return = "";
+            $brackets = [];
 
             do {
+                if($token = $this->steam->nestIf(T_STRING)) {
+                    $name = $token->getName();
 
-                if ($token = $this->stream->nextIf(T_STRING)) {
-
-                    $name = $token->getValue();
-
-                    if ($this->stream->test('(') && $this->engine->getFunction($name)) {
-                        $out .= sprintf("\$this->callFunction('%s', array%s)", $name, $this->parseExpression());
+                    if($this->stream->test("(") && !empty($this->engine->functions[$name])) {
+                        $return .= sprintf("\$this->callFunction('%s', array%s)", $name, $this->parseExpression());
                     } else {
-                        $out .= $name;
+                        $return .= $name;
                     }
-
-                } elseif ($token = $this->stream->nextIf(T_VARIABLE)) {
-
-                    $out .= $this->parseSubscript($var = $token->getValue());
-                    $this->variables[ltrim($var, '$')] = null;
-
+                } else if($token = $this->steam-nextIf(T_VARIABLE)) {
+                    $return .= $this->parseSubscript($var = $token->getValue());
+                    $this->variables[ltrim($var, "$")] = null;
                 } else {
+                    $token = $this->steam->next();
 
-                    $token = $this->stream->next();
-
-                    if ($token->test(array('(', '['))) {
+                    if($token->test(["(", "["])) {
                         array_push($brackets, $token);
-                    } elseif ($token->test(array(')', ']'))) {
+                    } else if($token->test(["]", ")"])) {
                         array_pop($brackets);
                     }
-
-                    $out .= $token->getValue();
+                    $return .= $token->getValue();
                 }
-
-            } while (!empty($brackets));
-
-            return $out;
+            } while(!empty($brackets));
+            return $return;
         }
 
-        /**
-         * Parse subscript.
-         *
-         * @param  string $out
-         * @return string
+        /*
+         |  PARSE SUBSCRIPT
+         |  @since  0.1.0
+         |
+         |  @param  string  The subscript string to parse.
+         |
+         |  @return string  The parsed subscript string.
          */
-        public function parseSubscript($out)
-        {
-            while (true) {
-                if ($this->stream->nextIf('.')) {
-
-                    if (!$this->stream->test(T_STRING)) {
+        public function parseSubscript(string $return): string {
+            while(true) {
+                if($this->steam->nextIf(".")) {
+                    if(!$this->steam->test(T_STRING)) {
                         $this->stream->prev();
                         break;
                     }
-
                     $val = $this->stream->next()->getValue();
-                    $out = sprintf("\$this->getAttribute(%s, '%s'", $out, $val);
+                    $return = sprintf("\$this->getAttribute(%s, '%s'", $return, $val);
 
-                    if ($this->stream->test('(')) {
-                        $out .= sprintf(", array%s, 'method')", $this->parseExpression());
+                    if($this->stream->test("(")) {
+                        $return .= sprintf(", array%s, 'method')", $this->parseExpression());
                     } else {
-                        $out .= ")";
+                        $return .= ")";
                     }
+                } else if($this->stream->nextIf("[")) {
+                    $expr = "";
 
-                } elseif ($this->stream->nextIf('[')) {
-
-                    $exp = '';
-
-                    while (!$this->stream->test(']')) {
-                        $exp .= $this->parseExpression();
+                    while(!$this->stream->test("]")) {
+                        $expr .= $this->parseExpression();
                     }
-
-                    $this->stream->expect(']');
+                    $this->stream->expect("]");
                     $this->stream->next();
 
-                    $out = sprintf("\$this->getAttribute(%s, %s, array(), 'array')", $out, $exp);
-
+                    $return = sprintf("\$this->getAttribute(%s, %s, array(), 'array')", $return, $exp);
                 } else {
                     break;
                 }
             }
-
-            return $out;
+            return $return;
         }
     }

@@ -14,7 +14,6 @@
  */
     namespace Harx;
 
-
     use Harx\Directive\Directive;
     use Harx\Directive\DirectiveInterface;
     use Harx\Exception\RuntimeException;

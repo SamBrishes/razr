@@ -14,97 +14,86 @@
  */
     namespace Harx;
 
-    class Token
-    {
+    /* Main Token Handler */
+    class Token {
+        /*
+         |  RETURN TOKEN NAME
+         |  @since  0.1.0
+         |
+         |  @param  int     The token integer value.
+         |
+         |  @return string  The token (constant) name.
+         */
+        static public function getName(int $type): string {
+            if($type === T_PUNCTUATION) {
+                return "T_PUNCTUATION";
+            }
+            return token_name($type);
+        }
+
+
+        /*
+         |  TOKEN TYPE
+         |  @type   int
+         */
         protected $type;
+
+        /*
+         |  TOKEN VALUE
+         |  @type   string
+         */
         protected $value;
+
+        /*
+         |  TOKEN LINE NUMBER
+         |  @type   int
+         */
         protected $line;
 
-        /**
-         * Constructor.
-         *
-         * @param int    $type
-         * @param string $value
-         * @param int    $line
+
+        /*
+         |  CONSTRUCTOR
+         |  @since  0.1.0
+         |
+         |  @param  int     The token type.
+         |  @param  string  The token value.
+         |  @param  int     The token line number.
          */
-        public function __construct($type, $value, $line)
-        {
-            $this->type  = $type;
+        public function __construct(int $type, string $value, int $line) {
+            $this->type = $type;
             $this->value = $value;
-            $this->line  = $line;
+            $this->line = $line;
         }
 
-        /**
-         * Gets the line.
-         *
-         * @return int
+        /*
+         |  MAGIC :: RETURN STRING WITH TOKEN DETAILS
+         |  @since  0.1.0
+         |
+         |  @return string  The token details as string.
          */
-        public function getLine()
-        {
-            return $this->line;
-        }
-
-        /**
-         * Gets the token type.
-         *
-         * @return int
-         */
-        public function getType()
-        {
-            return $this->type;
-        }
-
-        /**
-         * Gets the token value.
-         *
-         * @return string
-         */
-        public function getValue()
-        {
-            return $this->value;
-        }
-
-        /**
-         * Tests the token for a type and/or a value.
-         *
-         * @param  array|integer     $type
-         * @param  array|string|null $value
-         * @return bool
-         */
-        public function test($type, $value = null)
-        {
-            if ($value === null && !is_int($type)) {
-                $value = $type;
-                $type  = $this->type;
-            }
-
-            return ($this->type === $type) && ($value === null || (is_array($value) && in_array($this->value, $value)) || $this->value == $value);
-        }
-
-        /**
-         * Returns a string with the token details.
-         *
-         * @return string
-         */
-        public function __toString()
-        {
+        public function __toString() {
             return sprintf('%s (%s)', self::getName($this->type), $this->value);
         }
 
-        /**
-         * Returns the token name.
-         *
-         * @param  int    $type
-         * @return string
+        /*
+         |  TEST TOKEN FOR TYPE AND/OR VALUE
+         |  @since  0.1.0
+         |
+         |  @param  multi   The single type as integer or @param2 to skip the
+         |                  the type check.
+         |  @param  multi   The single value as string, multiple as array or
+         |                  null to check the type only.
+         |
+         |  @return bool    TRUE if the test match, FALSE if not.
          */
-        public static function getName($type)
-        {
-            if ($type == T_PUNCTUATION) {
-                $type = 'T_PUNCTUATION';
-            } else {
-                $type = token_name($type);
+        public function test(/* array | string | int */ $type, /* array | string | null */ $value = null): bool {
+            if($value === null && !is_int($type)) {
+                $value = $type;
+                $type = $this->type;
             }
-
-            return $type;
+            if($this->type !== $type) {
+                return false;
+            }
+            return $value === null || $this->value === $value || (is_array($value) && in_array($this->value, $value));
         }
     }

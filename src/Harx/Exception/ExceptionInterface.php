@@ -14,6 +14,4 @@
  */
     namespace Harx\Exception;
 
-    interface ExceptionInterface
-    {
-    }
+    interface ExceptionInterface { }

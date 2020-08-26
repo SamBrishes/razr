@@ -14,7 +14,6 @@
  */
     namespace Harx;
 
-
     use Harx\Exception\RuntimeException;
     use Harx\Exception\SyntaxErrorException;
 

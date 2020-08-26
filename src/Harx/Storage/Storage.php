@@ -14,34 +14,39 @@
  */
     namespace Harx\Storage;
 
-    abstract class Storage
-    {
+    abstract class Storage {
+        /*
+         |  TEMPLATE STRING
+         |  @type   string
+         */
         protected $template;
 
-        /**
-         * Constructor.
-         *
-         * @param string $template
+
+        /*
+         |  CONSTRUCTOR
+         |  @since  0.1.0
+         |
+         |  @param  string  The template string to store.
          */
-        public function __construct($template)
-        {
+        public function __construct(string $template) {
             $this->template = $template;
         }
 
-        /**
-         * Gets the object string representation.
-         *
-         * @return string
+        /*
+         |  MAGIC :: OBJECT STRING REPRESENTATION
+         |  @since  0.1.0
+         |
+         |  @return string  The template object as string.
          */
-        public function __toString()
-        {
+        public function __toString() {
             return (string) $this->template;
         }
 
-        /**
-         * Gets the template content.
-         *
-         * @return string
+        /*
+         |  ABSTRACT :: GET TEMPLATE CONTENT
+         |  @since  0.1.0
+         |
+         |  @return string  The template content.
          */
-        abstract public function getContent();
+        abstract public function getContent(): string { }
     }
