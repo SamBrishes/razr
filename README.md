@@ -81,6 +81,9 @@ HTML syntax working on your favourite Editor and IDE, but the files are - of cou
 XHTML files at all. We're working on additional extensions for ATOM and Visual Studio Code to
 support the future used `.hxht` (**h**ar**x** **ht**ml) extension.
 
+Below you will find just a basic PHP implementation, check out the [official documentation](https://harx.io/docs)
+for more information and instructions.
+
 ```php
 <?php
     // Create a new Instance
@@ -106,6 +109,8 @@ support the future used `.hxht` (**h**ar**x** **ht**ml) extension.
 
 ### Syntax
 
+The Basic / Core Syntax contains the following directives and commands.
+
 - [@( )](https://harx.io/docs/@)
 - [@e( )](https://harx.io/docs/@e)
 - [@escape( )](https://harx.io/docs/@escape)
@@ -130,6 +135,7 @@ support the future used `.hxht` (**h**ar**x** **ht**ml) extension.
 - [@include( )](https://harx.io/docs/@include)
 - [@embed( )](https://harx.io/docs/@embed)
 - [@extend( )](https://harx.io/docs/@extend)
+- [Custom Tags](https://harx.io/docs/custom_tags)
 
 
 Copyright & License

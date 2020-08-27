@@ -17,23 +17,29 @@
     use Harx\Token;
     use Harx\TokenStream;
 
-    class ExtendDirective extends Directive
-    {
-        /**
-         * Constructor.
+
+    class ExtendDirective extends Directive {
+        /*
+         |  CONSTRUCTOR
+         |  @since  0.1.0
          */
-        public function __construct()
-        {
+        public function __construct() {
             $this->name = 'extend';
         }
 
-        /**
-         * @{inheritdoc}
+        /*
+         |  PARSE DIRECTIVE
+         |  @since  0.1.0
+         |
+         |  @param  object  The token stream instance.
+         |  @param  object  The token instance.
+         |
+         |  @return string  The string directive representation or null.
          */
-        public function parse(TokenStream $stream, Token $token)
-        {
-            if ($stream->nextIf('extend') && $stream->expect('(')) {
+        public function parse(TokenStream $stream, Token $token): ?string {
+            if($stream->nextIf('extend') && $stream->expect('(')) {
                 return sprintf("\$this->extend%s", $this->parser->parseExpression());
             }
+            return null;
         }
     }

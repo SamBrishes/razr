@@ -15,7 +15,6 @@
     namespace Harx;
 
     use Harx\Directive\Directive;
-    use Harx\Directive\DirectiveInterface;
     use Harx\Exception\RuntimeException;
     use Harx\Extension\CoreExtension;
     use Harx\Extension\ExtensionInterface;
@@ -137,7 +136,7 @@
             $this->lexer = new Lexer($this);
             $this->parser = new Parser($this);
             $this->config = (object) array_merge(self::DEFAULTS, $config);
-            $this->addExtension(new CoreExtension());
+            $this->setExtension(new CoreExtension());
         }
 
         /*
@@ -155,6 +154,18 @@
         }
 
         /*
+         |  GET GLOBAL VARIABLE
+         |  @since  0.1.0
+         |
+         |  @param  string  The global variable key.
+         |
+         |  @return any     The value of the passed global key, or null.
+         */
+        public function getGlobal(string $key)/*: any */ {
+            return $this->globals[$key] ?? null;
+        }
+
+        /*
          |  SET GLOBAL DIRECTIVE
          |  @since  0.1.0
          |
@@ -162,7 +173,7 @@
          |
          |  @return object  The Harx instance itself.
          */
-        public function setDirective(DirectiveInterface $directive): Harx {
+        public function setDirective(Directive $directive): Harx {
             if($this->init) {
                 throw new RuntimeException(sprintf("The Harx instance has already been initialized, unable to set the '%s' directive.", $directive->getName()));
             }
@@ -174,6 +185,18 @@
         }
 
         /*
+         |  GET GLOBAL DIRECTIVE
+         |  @since  0.1.0
+         |
+         |  @param  string  The directive key.
+         |
+         |  @return object  The directive instance or null.
+         */
+        public function getDirective(string $key): ?Directive {
+            return $this->directives[$key] ?? null;
+        }
+
+        /*
          |  SET GLOBAL FUNCTION
          |  @since  0.1.0
          |
@@ -182,14 +205,26 @@
          |
          |  @return object  The Harx instance itself.
          */
-        public function setFunction(string $name, callable $function): Harx {
+        public function setFunction(string $key, callable $function): Harx {
             if($this->init) {
                 throw new RuntimeException(sprintf("The Harx instance has already been initialized, unable to set the '%s' function.", $name));
             }
 
             // Set & Return
-            $this->functions[$name] = $function;
+            $this->functions[$key] = $function;
             return $this;
+        }
+
+        /*
+         |  GET GLOBAL FUNCTION
+         |  @since  0.1.0
+         |
+         |  @param  string  The function key.
+         |
+         |  @return object  The function instance or null.
+         */
+        public function getFunction(string $key): ?callable {
+            return $this->functions[$key] ?? null;
         }
 
         /*
@@ -200,15 +235,29 @@
          |
          |  @return object  The Harx instance itself.
          */
-        public function setExtension(ExtensionInterface $extension) {
+        public function setExtension(ExtensionInterface $extension): Harx {
             if($this->init) {
                 throw new RuntimeException(sprintf("The Harx instance has already been initialized, unable to set the '%s' extension.", $extension->getName()));
             }
 
             // Set & Return
-            $this->extensions[$extension->getName()] = $extensions;
+            $this->extensions[$extension->getName()] = $extension;
             return $this;
         }
+
+        /*
+         |  GET GLOBAL EXTENSION
+         |  @since  0.1.0
+         |
+         |  @param  string  The extension key.
+         |
+         |  @return object  The extension instance or null.
+         */
+        public function getExtension(string $key): ?ExtensionInterface {
+            return $this->extensions[$key] ?? null;
+        }
+
+        static protected $classes = [];
 
         /*
          |  GET VALUE FROM OBJECT / ARRAY / CONSTRUCT
@@ -243,18 +292,18 @@
                 return $object->$key;
             }
 
-            // Method Handler
+            // Check Method
             if(($class = get_class($object)) === false) {
                 return null;
             }
 
             // Get Method
-            if(method_exists([$class, $key]) || method_exists([$class, "__call"])) {
-                $callable = [$class, $key];
-            } else if(method_exists([$class, "get$key"])) {
-                $callable = [$class, "get$key"];
-            } else if(method_exists([$class, "is$key"])) {
-                $callable = [$class, "is$key"];
+            if(method_exists($class, $key) || method_exists($class, "__call")) {
+                $callable = [$object, $key];
+            } else if(method_exists($class, "get$key")) {
+                $callable = [$object, "get$key"];
+            } else if(method_exists($class, "is$key")) {
+                $callable = [$object, "is$key"];
             } else {
                 return null;
             }
@@ -274,10 +323,10 @@
          |                  function does not exist.
          */
         public function applyFunction(string $key, array $args = [])/*: any */ {
-            if(!array_key_exists($name, $this->functions)) {
+            if(!array_key_exists($key, $this->functions)) {
                 return null;
             }
-            return call_user_func_array($this->functions[$name], $args);
+            return call_user_func_array($this->functions[$key], $args);
         }
 
         /*
@@ -402,7 +451,7 @@
                 return $this->cache[$name];
             }
 
-            $cache = $this->cache_path? sprintf('%s/%s.cache', $this->config->cache_path], sha1($name)): null;
+            $cache = $this->config->cache_path? sprintf('%s/%s.cache', $this->config->cache_path, sha1($name)): null;
             if(!$cache) {
                 $storage = new StringStorage($this->compile($his->loader->getSource($name), $name));
             } else {
@@ -422,7 +471,7 @@
          */
         protected function initialize(): void {
             foreach($this->extensions AS $ext) {
-                $extension->initialize($this);
+                $ext->initialize($this);
             }
             $this->init = true;
         }
@@ -436,7 +485,7 @@
          |
          |  @return void
          */
-        protected function writeCacheFile(stirng $file, string $content): void {
+        protected function writeCacheFile(string $file, string $content): void {
             $dir = dirname($file);
 
             if(!is_dir($dir)) {

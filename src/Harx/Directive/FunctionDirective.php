@@ -17,50 +17,64 @@
     use Harx\Token;
     use Harx\TokenStream;
 
-    class FunctionDirective extends Directive
-    {
+
+    class FunctionDirective extends Directive {
+        /*
+         |  CALLABLE FUNCTION
+         |  @type   callback
+         */
         protected $function;
+
+        /*
+         |  ESCAPE RESULT
+         |  @type   bool
+         */
         protected $escape;
 
-        /**
-         * Constructor.
-         *
-         * @param string   $name
-         * @param callable $function
-         * @param bool     $escape
+        /*
+         |  CONSTRUCTOR
+         |  @since  0.1.0
+         |
+         |  @param  string  The directive name.
+         |  @param  callb.  The callback function.
+         |  @param  bool    TRUE to escape the output, FALSE to do it not.
          */
-        public function __construct($name, $function, $escape = false)
-        {
-            $this->name     = $name;
+        public function __construct(string $name, callable $function, bool $escape = false) {
+            $this->name = $name;
             $this->function = $function;
-            $this->escape   = $escape;
+            $this->escape = $escape;
         }
 
-        /**
-         * Calls the function with an array of arguments.
-         *
-         * @param  array $args
-         * @return mixed
+        /*
+         |  CALL FUNCTION
+         |  @since  0.1.0
+         |
+         |  @param  array   Additional argumnets to call the function.
+         |
+         |  @return multi   The respective returning value from the set function.
          */
-        public function call(array $args = array())
-        {
+        public function call(array $args = [])/*: any */ {
             return call_user_func_array($this->function, $args);
         }
 
-        /**
-         * @{inheritdoc}
+        /*
+         |  PARSE DIRECTIVE
+         |  @since  0.1.0
+         |
+         |  @param  object  The token stream instance.
+         |  @param  object  The token instance.
+         |
+         |  @return string  The string directive representation or null.
          */
-        public function parse(TokenStream $stream, Token $token)
-        {
+        public function parse(TokenStream $stream, Token $token): ?string {
             if ($stream->nextIf($this->name)) {
+                $return = sprintf("\$this->getDirective('%s')->call(%s)", $this->name, $stream->test('(') ? 'array' . $this->parser->parseExpression() : '');
 
-                $out = sprintf("\$this->getDirective('%s')->call(%s)", $this->name, $stream->test('(') ? 'array' . $this->parser->parseExpression() : '');
-
-                if ($this->escape) {
-                    $out = sprintf("\$this->escape(%s)", $out);
+                if($this->escape) {
+                    $return = sprintf("\$this->escape(%s)", $out);
                 }
-
-                return sprintf("echo(%s)", $out);
+                return sprintf("echo(%s)", $return);
             }
+            return null;
         }
     }

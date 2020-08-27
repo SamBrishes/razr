@@ -14,30 +14,35 @@
  */
     namespace Harx\Loader;
 
-    interface LoaderInterface
-    {
-        /**
-         * Gets the source code of a template, given its name.
-         *
-         * @param  string $name
-         * @return string
+    interface LoaderInterface {
+        /*
+         |  GET TEMPLATE SOURCE CODE
+         |  @since  0.1.0
+         |
+         |  @param  string  The template name as string.
+         |
+         |  @return string  The respective source code of the template.
          */
-        public function getSource($name);
+        public function getSource(string $name): string;
 
-        /**
-         * Gets the cache key to use for the cache for a given template name.
-         *
-         * @param  string $name
-         * @return string
+        /*
+         |  GET TEMPLATE CACHE KEY
+         |  @since  0.1.0
+         |
+         |  @param  string  The template name as string.
+         |
+         |  @return string  The cache key of the passed template name.
          */
-        public function getCacheKey($name);
+        public function getCacheKey(string $name): string;
 
-        /**
-         * Returns true if the template is still fresh.
-         *
-         * @param  string $name
-         * @param  int    $time
-         * @return bool
+        /*
+         |  CHECK IF TEMPLATE IS STILL FRESH
+         |  @since  0.1.0
+         |
+         |  @param  string  The template name as string.
+         |  @param  int     The timestamp to compare with.
+         |
+         |  @return bool    TRUE if the template is still fresh, FALSE if not.
          */
-        public function isFresh($name, $time);
+        public function isFresh(string $name, int $time): bool;
     }

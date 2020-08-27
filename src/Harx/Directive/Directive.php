@@ -16,26 +16,46 @@
 
     use Harx\Harx;
 
-    abstract class Directive implements DirectiveInterface
-    {
+
+    abstract class Directive {
+        /*
+         |  DIRECTIVE NAME
+         |  @type   string
+         */
         protected $name;
+
+        /*
+         |  HARX ENGINE INSTANCE
+         |  @type   Harx
+         */
         protected $engine;
+
+        /*
+         |  PARSER INSTANCE
+         |  @type   Parser
+         */
         protected $parser;
 
-        /**
-         * {@inheritdoc}
+        /*
+         |  GET NAME
+         |  @since  0.1.0
+         |
+         |  @return string  The directive name as string.
          */
-        public function getName()
-        {
+        public function getName(): string {
             return $this->name;
         }
 
-        /**
-         * @{inheritdoc}
+        /*
+         |  SET HARX ENGINE AND PARSER INSTANCES
+         |  @since  0.1.0
+         |
+         |  @param  object  The Harx engine instance.
+         |
+         |  @return void
          */
-        public function setEngine(Harx $engine)
-        {
+        public function setEngine(Harx $engine): void {
             $this->engine = $engine;
-            $this->parser = $engine->getParser();
+            $this->parser = $engine->parser;
         }
     }

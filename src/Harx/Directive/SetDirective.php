@@ -17,30 +17,33 @@
     use Harx\Token;
     use Harx\TokenStream;
 
-    class SetDirective extends Directive
-    {
-        /**
-         * Constructor.
+
+    class SetDirective extends Directive {
+        /*
+         |  CONSTRUCTOR
+         |  @since  0.1.0
          */
-        public function __construct()
-        {
+        public function __construct() {
             $this->name = 'set';
         }
 
-        /**
-         * @{inheritdoc}
+        /*
+         |  PARSE DIRECTIVE
+         |  @since  0.1.0
+         |
+         |  @param  object  The token stream instance.
+         |  @param  object  The token instance.
+         |
+         |  @return string  The string directive representation or null.
          */
-        public function parse(TokenStream $stream, Token $token)
-        {
+        public function parse(TokenStream $stream, Token $token): ?string {
             if ($stream->nextIf('set') && $stream->expect('(')) {
-
-                $out = '';
-
+                $return = '';
                 while (!$stream->test(T_CLOSE_TAG)) {
-                    $out .= $this->parser->parseExpression();
+                    $return .= $this->parser->parseExpression();
                 }
-
-                return $out;
+                return $return;
             }
+            return null;
         }
     }

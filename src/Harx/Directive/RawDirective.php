@@ -17,30 +17,33 @@
     use Harx\Token;
     use Harx\TokenStream;
 
-    class RawDirective extends Directive
-    {
-        /**
-         * Constructor.
+
+    class RawDirective extends Directive {
+        /*
+         |  CONSTRUCTOR
+         |  @since  0.1.0
          */
-        public function __construct()
-        {
+        public function __construct() {
             $this->name = 'raw';
         }
 
-        /**
-         * @{inheritdoc}
+        /*
+         |  PARSE DIRECTIVE
+         |  @since  0.1.0
+         |
+         |  @param  object  The token stream instance.
+         |  @param  object  The token instance.
+         |
+         |  @return string  The string directive representation or null.
          */
-        public function parse(TokenStream $stream, Token $token)
-        {
-            if ($stream->nextIf('raw') && $stream->expect('(')) {
-
-                $out = 'echo';
-
+        public function parse(TokenStream $stream, Token $token): ?string {
+            if($stream->nextIf('raw') && $stream->expect('(')) {
+                $return = 'echo';
                 while (!$stream->test(T_CLOSE_TAG)) {
-                    $out .= $this->parser->parseExpression();
+                    $return .= $this->parser->parseExpression();
                 }
-
-                return $out;
+                return $return;
             }
+            return null;
         }
     }

@@ -17,41 +17,54 @@
     use Harx\Token;
     use Harx\TokenStream;
 
-    class ControlDirective extends Directive
-    {
+
+    class ControlDirective extends Directive {
+        /*
+         |  START CONTROL TOKENs
+         |  @type   array
+         */
         protected $control;
+
+        /*
+         |  END CONTROL TOKENs
+         |  @type   array
+         */
         protected $controlEnd;
 
-        /**
-         * Constructor.
+        /*
+         |  CONSTRUCTOR
+         |  @since  0.1.0
          */
-        public function __construct()
-        {
+        public function __construct() {
             $this->name = 'control';
-            $this->control = array(T_FOR, T_FOREACH, T_IF, T_ELSEIF, T_ELSE, T_WHILE);
-            $this->controlEnd = array(T_ENDFOR, T_ENDFOREACH, T_ENDIF, T_ENDWHILE);
+            $this->control = [T_FOR, T_FOREACH, T_IF, T_ELSEIF, T_ELSE, T_WHILE];
+            $this->controlEnd = [T_ENDFOR, T_ENDFOREACH, T_ENDIF, T_ENDWHILE];
         }
 
-        /**
-         * @{inheritdoc}
+        /*
+         |  PARSE DIRECTIVE
+         |  @since  0.1.0
+         |
+         |  @param  object  The token stream instance.
+         |  @param  object  The token instance.
+         |
+         |  @return string  The string directive representation or null.
          */
-        public function parse(TokenStream $stream, Token $token)
-        {
-            $control = in_array($token->getType(), $this->control);
+        public function parse(TokenStream $stream, Token $token): ?String {
+            $control = in_array($token->type, $this->control);
 
-            if ($control || in_array($token->getType(), $this->controlEnd)) {
+            if ($control || in_array($token->type, $this->controlEnd)) {
+                $return = '';
 
-                $out = '';
-
-                while (!$stream->test(T_CLOSE_TAG)) {
-                    $out .= $this->parser->parseExpression();
+                while(!$stream->test(T_CLOSE_TAG)) {
+                    $return .= $this->parser->parseExpression();
                 }
 
-                if ($control) {
-                    $out .= ':';
+                if($control) {
+                    $return .= ':';
                 }
-
-                return $out;
+                return $return;
             }
+            return null;
         }
     }

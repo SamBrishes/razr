@@ -16,78 +16,96 @@
 
     use Harx\Exception\RuntimeException;
 
-    class FilesystemLoader implements LoaderInterface
-    {
-        protected $paths;
 
-        /**
-         * Constructor.
-         *
-         * @param array $paths
+    class FilesystemLoader implements LoaderInterface {
+        /*
+         |  CHECK IF FILE IS AN EXISTING ABSOLUTE PATH
+         |  @since  0.1.0
+         |
+         |  @param  string  The file path to check.
+         |
+         |  @return bool    TRUE if the file is within an absolute path, FALSE if not.
          */
-        public function __construct($paths = array())
-        {
-            $this->paths = (array) $paths;
+        static protected function isAbsolutePath(string $file): bool {
+            if(strlen($file) >= 3 && ctype_alpha($file[0]) && $file[1] === ":" && ($file[2] === "\\" || $file[2] === "/")) {
+                return true;
+            }
+            return $file[0] === "/" || $file[0] === "\\" || realpath($file) === $file || null !== parse_url($file, PHP_URL_SCHEME);
         }
 
-        /**
-         * {@inheritdoc}
+
+        /*
+         |  TEMPLATE PATHs
+         |  @since  array
          */
-        public function getSource($name)
-        {
+        protected $paths;
+
+        /*
+         |  CONSTRUCTOR
+         |  @since  0.1.0
+         |
+         |  @param  array   The template paths.
+        */
+        public function __construct(array $paths = [ ]) {
+            $this->paths = $paths;
+        }
+
+        /*
+         |  GET TEMPLATE SOURCE CODE
+         |  @since  0.1.0
+         |
+         |  @param  string  The template name as string.
+         |
+         |  @return string  The respective source code of the template.
+         */
+        public function getSource(string $name): string {
             return file_get_contents($this->findTemplate($name));
         }
 
-        /**
-         * {@inheritdoc}
+        /*
+         |  GET TEMPLATE CACHE KEY
+         |  @since  0.1.0
+         |
+         |  @param  string  The template name as string.
+         |
+         |  @return string  The cache key of the passed template name.
          */
-        public function getCacheKey($name)
-        {
+        public function getCacheKey(string $name): string {
             return $this->findTemplate($name);
         }
 
-        /**
-         * {@inheritdoc}
+        /*
+         |  CHECK IF TEMPLATE IS STILL FRESH
+         |  @since  0.1.0
+         |
+         |  @param  string  The template name as string.
+         |  @param  int     The timestamp to compare with.
+         |
+         |  @return bool    TRUE if the template is still fresh, FALSE if not.
          */
-        public function isFresh($name, $time)
-        {
+        public function isFresh(string $name, int $time): bool {
             return filemtime($this->findTemplate($name)) <= $time;
         }
 
-        /**
-         * Finds a template by a given name.
+        /*
+         |  FIND TEMPLATE
+         |  @since  0.1.0
+         |
+         |  @param  string  The template name to search as string.
+         |
+         |  @return string  The template path.
          */
-        protected function findTemplate($name)
-        {
-            $name = (string) $name;
-
-            if (self::isAbsolutePath($name) && is_file($name)) {
+        protected function findTemplate(string $name): string {
+            if(self::isAbsolutePath($name) && is_file($name)) {
                 return $name;
             }
 
             $name = ltrim(strtr($name, '\\', '/'), '/');
-
-            foreach ($this->paths as $path) {
-                if (is_file($file = $path.'/'.$name)) {
+            foreach($this->paths as $path) {
+                if(is_file($file = $path . DIRECTORY_SEPARATOR . $name)) {
                     return $file;
                 }
             }
-
             throw new RuntimeException(sprintf('Unable to find template "%s" (looked into: %s).', $name, implode(', ', $this->paths)));
-        }
-
-        /**
-         * Returns true if the file is an existing absolute path.
-         *
-         * @param  string $file
-         * @return boolean
-         */
-        protected static function isAbsolutePath($file)
-        {
-            if ($file[0] == '/' || $file[0] == '\\' || (strlen($file) > 3 && ctype_alpha($file[0]) && $file[1] == ':' && ($file[2] == '\\' || $file[2] == '/')) || null !== parse_url($file, PHP_URL_SCHEME)) {
-                return true;
-            }
-
-            return false;
         }
     }

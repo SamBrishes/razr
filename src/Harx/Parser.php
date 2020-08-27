@@ -60,8 +60,8 @@
          |
          |  @return string  The parsed token stream.
          */
-        public function parse(TokenStream $parse, ?string $filename = null): string {
-            $this->Stream = $stream;
+        public function parse(TokenStream $stream, ?string $filename = null): string {
+            $this->stream = $stream;
             $this->filename = $filename;
             $this->variables = [];
             return $this->parseMain();
@@ -76,13 +76,13 @@
         public function parseMain(): string {
             $return = "";
 
-            while($token = $this->steam->next()) {
+            while($token = $this->stream->next()) {
                 if($token->test(T_COMMENT, "/* OUTPUT */")) {
                     $return .= $this->parseOutput();
-                } else if($token-test(T_COMMENT, "/* DIRECTIVE */")) {
+                } else if($token->test(T_COMMENT, "/* DIRECTIVE */")) {
                     $return .= $this->parseDirective();
                 } else {
-                    $return .= $token->getValue()
+                    $return .= $token->value;
                 }
             }
 
@@ -100,7 +100,7 @@
          |
          |  @return string  The output string, using the scape function.
          */
-        public function parseOutout(): string {
+        public function parseOutput(): string {
             $return = "echo \$this->escape(";
 
             while(!$this->stream->test(T_CLOSE_TAG)) {
@@ -116,7 +116,7 @@
          |
          |  @return string  The parsed directive string.
          */
-        public function parseDirective(): string {
+        public function parseDirective(): ?string {
             $return = "";
 
             foreach($this->engine->directives AS $directive) {
@@ -138,26 +138,26 @@
             $brackets = [];
 
             do {
-                if($token = $this->steam->nestIf(T_STRING)) {
-                    $name = $token->getName();
+                if($token = $this->stream->nextIf(T_STRING)) {
+                    $name = $token->value;
 
                     if($this->stream->test("(") && !empty($this->engine->functions[$name])) {
-                        $return .= sprintf("\$this->callFunction('%s', array%s)", $name, $this->parseExpression());
+                        $return .= sprintf("\$this->applyFunction('%s', array%s)", $name, $this->parseExpression());
                     } else {
                         $return .= $name;
                     }
-                } else if($token = $this->steam-nextIf(T_VARIABLE)) {
-                    $return .= $this->parseSubscript($var = $token->getValue());
+                } else if($token = $this->stream->nextIf(T_VARIABLE)) {
+                    $return .= $this->parseSubscript($var = $token->value);
                     $this->variables[ltrim($var, "$")] = null;
                 } else {
-                    $token = $this->steam->next();
+                    $token = $this->stream->next();
 
                     if($token->test(["(", "["])) {
                         array_push($brackets, $token);
                     } else if($token->test(["]", ")"])) {
                         array_pop($brackets);
                     }
-                    $return .= $token->getValue();
+                    $return .= $token->value;
                 }
             } while(!empty($brackets));
             return $return;
@@ -173,13 +173,13 @@
          */
         public function parseSubscript(string $return): string {
             while(true) {
-                if($this->steam->nextIf(".")) {
-                    if(!$this->steam->test(T_STRING)) {
+                if($this->stream->nextIf(".")) {
+                    if(!$this->stream->test(T_STRING)) {
                         $this->stream->prev();
                         break;
                     }
-                    $val = $this->stream->next()->getValue();
-                    $return = sprintf("\$this->getAttribute(%s, '%s'", $return, $val);
+                    $val = $this->stream->next()->value;
+                    $return = sprintf("\$this->getAttribute('%s', %s", $val, $return);
 
                     if($this->stream->test("(")) {
                         $return .= sprintf(", array%s, 'method')", $this->parseExpression());
@@ -195,7 +195,7 @@
                     $this->stream->expect("]");
                     $this->stream->next();
 
-                    $return = sprintf("\$this->getAttribute(%s, %s, array(), 'array')", $return, $exp);
+                    $return = sprintf("\$this->getAttribute(%s, %s, array(), 'array')", $expr, $return);
                 } else {
                     break;
                 }

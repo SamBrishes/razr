@@ -130,7 +130,7 @@
          |
          |  @return bool    TRUE if the test match, FALSE if not.
          */
-        public function nextIf(/* array | string | int */ $type, /* array | string | null */ $value = null): bool {
+        public function test(/* array | string | int */ $type, /* array | string | null */ $value = null): bool {
             return $this->tokens[$this->current]->test($type, $value);
         }
 

@@ -137,7 +137,7 @@
             $this->source = "";
             $this->filename = $filename;
             $this->cursor = 0;
-            $this->lineno = 1:
+            $this->lineno = 1;
             $this->end = strlen($this->code);
             $this->tokens = [];
             $this->state = self::STATE_DATA;
@@ -192,7 +192,7 @@
             $position = $this->positions[0][++$this->position];
 
             // Loop
-            while($position[1] $this->cursor) {
+            while($position[1] < $this->cursor) {
                 if($this->position === count($this->positions[0]) - 1) {
                     return;
                 }
@@ -218,7 +218,7 @@
 
                 if(isset($match[2])) {
                     $this->moveCursor(rtrim($match[2], "("));
-                    $this->loexExpression();
+                    $this->lexExpression();
                 }
             }
         }
@@ -273,7 +273,7 @@
                 }
 
                 [$expect, $lineno] = array_pop($this->brackets);
-                if($this->code[$this->Cursor] !== strtr($expect, "([{", "}])")) {
+                if($this->code[$this->cursor] !== strtr($expect, "([{", ")]}")) {
                     throw new SyntaxErrorException(sprintf('Unclosed "%s" at line %d in file %s', $expect, $lineno, $this->filename));
                 }
             }
@@ -325,7 +325,7 @@
          |  @return void
          */
         protected function popState(){
-            if(count($this->States === 0)) {
+            if(count($this->states) === 0) {
                 throw new RuntimeException('Cannot pop state without a previous state');
             }
             $this->state = array_pop($this->states);

@@ -24,75 +24,91 @@
     use Harx\Exception\InvalidArgumentException;
     use Harx\Exception\RuntimeException;
 
-    class CoreExtension implements ExtensionInterface
-    {
-        protected $blocks = array();
-        protected $openBlocks = array();
 
-        /**
-         * {@inheritdoc}
+    class CoreExtension implements ExtensionInterface {
+        /*
+         |  BLOCKS HOLDER
+         |  @type   array
          */
-        public function getName()
-        {
+        protected $blocks = [ ];
+
+        /*
+         |  OPEN BLOCKS HOLDER
+         |  @type   array
+         */
+        protected $openBlocks = [ ];
+
+        /*
+         |  GET EXTENSION NAME
+         |  @since  0.1.0
+         |
+         |  @return string  The extension name.
+         */
+        public function getName(): string {
             return 'core';
         }
 
-        /**
-         * {@inheritdoc}
+        /*
+         |  INITIALIZE EXTENSION
+         |  @since  0.1.0
+         |
+         |  @param  object  The Harx instance.
+         |
+         |  @return void
          */
-        public function initialize(Harx $engine)
-        {
-            // directives
-            $engine->addDirective(new BlockDirective);
-            $engine->addDirective(new ControlDirective);
-            $engine->addDirective(new ExtendDirective);
-            $engine->addDirective(new IncludeDirective);
-            $engine->addDirective(new RawDirective);
-            $engine->addDirective(new SetDirective);
+        public function initialize(Harx $engine): void {
+            // Set Directives
+            $engine->setDirective(new BlockDirective);
+            $engine->setDirective(new ControlDirective);
+            $engine->setDirective(new ExtendDirective);
+            $engine->setDirective(new IncludeDirective);
+            $engine->setDirective(new RawDirective);
+            $engine->setDirective(new SetDirective);
 
-            // functions
-            $engine->addFunction('e', array($engine, 'escape'));
-            $engine->addFunction('escape', array($engine, 'escape'));
-            $engine->addFunction('block', array($this, 'block'));
-            $engine->addFunction('constant', array($this, 'getConstant'));
-            $engine->addFunction('json', 'json_encode');
-            $engine->addFunction('upper', 'strtoupper');
-            $engine->addFunction('lower', 'strtolower');
-            $engine->addFunction('format', 'sprintf');
-            $engine->addFunction('replace', 'strtr');
+            // Set Functions
+            $engine->setFunction('e', [$engine, 'escape']);
+            $engine->setFunction('escape', [$engine, 'escape']);
+            $engine->setFunction('block', [$this, 'block']);
+            $engine->setFunction('constant', [$this, 'getConstant']);
+            $engine->setFunction('json', 'json_encode');
+            $engine->setFunction('upper', 'strtoupper');
+            $engine->setFunction('lower', 'strtolower');
+            $engine->setFunction('format', 'sprintf');
+            $engine->setFunction('replace', 'strtr');
         }
 
-        /**
-         * Gets or sets a block.
-         *
-         * @param  string $name
-         * @param  mixed  $value
-         * @return string
+        /*
+         |  GET OR SET A BLOCK
+         |  @since  0.1.0
+         |
+         |  @param  string  The block name as string.
+         |  @param  string  The block content or null to receive a block.
+         |
+         |  @return string  The block content, if no second parameter is passed, null otherwise.
          */
-        public function block($name, $value = null)
-        {
+        public function block(string $name, ?string $value = null): ?string {
             if ($value === null) {
-                return isset($this->blocks[$name]) ? $this->blocks[$name] : null;
+                return $this->blocks[$name] ?? null;
             }
-
             $this->blocks[$name] = $value;
+            return null;
         }
 
-        /**
-         * Starts a block.
-         *
-         * @param  string $name
-         * @throws InvalidArgumentException
+        /*
+         |  START A BLOCK
+         |  @since  0.1.0
+         |
+         |  @param  string  The block name as string.
+         |
+         |  @return void
          */
-        public function startBlock($name)
-        {
-            if (in_array($name, $this->openBlocks)) {
+        public function startBlock(string $name): void {
+            if(in_array($name, $this->openBlocks)) {
                 throw new InvalidArgumentException(sprintf('A block "%s" is already started.', $name));
             }
 
             $this->openBlocks[] = $name;
-
-            if (!isset($this->blocks[$name])) {
+            if(!isset($this->blocks[$name])) {
                 $this->blocks[$name] = null;
             }
 
@@ -100,52 +116,49 @@
             ob_implicit_flush(0);
         }
 
-        /**
-         * Stops a block.
-         *
-         * @throws RuntimeException
-         * @return string
+        /*
+         |  END A BLOCK
+         |  @since  0.1.0
+         |
+         |  @return string  The while block content.
          */
-        public function endBlock()
-        {
-            if (!$this->openBlocks) {
+        public function endBlock(): string {
+            if(!$this->openBlocks) {
                 throw new RuntimeException('No block started.');
             }
 
             $name  = array_pop($this->openBlocks);
             $value = ob_get_clean();
-
             if ($this->blocks[$name] === null) {
                 $this->blocks[$name] = $value;
             }
-
             return $this->blocks[$name];
         }
 
-        /**
-         * Reset all blocks.
-         *
-         * @return void
+        /*
+         |  RESET ALL BLOCKS
+         |  @since  0.1.0
+         |
+         |  @return void
          */
-        public function resetBlocks()
-        {
-            $this->blocks = array();
-            $this->openBlocks = array();
+        public function resetBlocks(): void {
+            $this->blocks = [ ];
+            $this->openBlocks = [ ];
         }
 
-        /**
-         * Gets a constant from an object.
-         *
-         * @param  string $name
-         * @param  object $object
-         * @return mixed
+        /*
+         |  GET CONSTANT FROM OBJECT
+         |  @since  0.1.0
+         |
+         |  @param  string  The constant name.
+         |  @param  object  The object to get the constant from, null to get a global constant.
+         |
+         |  @return multi   The constant value.
          */
-        public function getConstant($name, $object = null)
-        {
+        public function getConstant(string $name, ?object $object = null)/*: any */ {
             if ($object !== null) {
                 $name = sprintf('%s::%s', get_class($object), $name);
             }
-
             return constant($name);
         }
     }

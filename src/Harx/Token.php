@@ -36,19 +36,19 @@
          |  TOKEN TYPE
          |  @type   int
          */
-        protected $type;
+        public $type;
 
         /*
          |  TOKEN VALUE
          |  @type   string
          */
-        protected $value;
+        public $value;
 
         /*
          |  TOKEN LINE NUMBER
          |  @type   int
          */
-        protected $line;
+        public $line;
 
 
         /*

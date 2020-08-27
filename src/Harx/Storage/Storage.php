@@ -48,5 +48,5 @@
          |
          |  @return string  The template content.
          */
-        abstract public function getContent(): string { }
+        abstract public function getContent(): string;
     }
