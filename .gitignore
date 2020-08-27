@@ -1,4 +1,9 @@
+# Ignore Basics
 /vendor/
 /composer.phar
 /composer.lock
 .DS_Store
+
+# Ignore Cache
+*.cache
+/*/*.cache
