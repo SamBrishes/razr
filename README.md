@@ -138,6 +138,14 @@ The Basic / Core Syntax contains the following directives and commands.
 - [Custom Tags](https://harx.io/docs/custom_tags)
 
 
+Third Party
+-----------
+
+We're using the following Third-Party packages to provide the examples:
+
+-   [Milligram - Minimalistic CSS Framework](https://milligram.io)
+
+
 Copyright & License
 -------------------
 
