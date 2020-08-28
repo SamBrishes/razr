@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html lang="en-gb">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+        <title>Harx Rendering Engine Example</title>
+
+        <link type="text/css" rel="stylesheet" href="css/milligram.min.css?ver=1.4.0" />
+        <link type="text/css" rel="stylesheet" href="css/milligram-plus.min.css?ver=1.4.0" />
+    </head>
+    <body>
+        <div class="container">
+
+        </div>
+
+        <div class="container mx-auto py-3">
+            <div class="row">
+                <div class="column">
+                    <h1>@( $blog.title )</h1>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="column">
+                    <p>@( $blog.description )</p>
+                    <hr />
+                </div>
+            </div>
+        </div>
+
+        <div class="container mx-auto py-3">
+            <div class="row">
+                <div class="column">
+                    @if( $view === "home" )
+                        HomePage
+                    @elif( $view === "post" )
+                        @include( "article.xhtml" )
+                    @else( )
+                        404
+                    @endif( )
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,36 +1,74 @@
 <?php
+    require_once dirname(__DIR__) . "/src/autoload.php";
 
-require __DIR__.'/autoload.php';
+    use Harx\Harx;
+    use Harx\Loader\FilesystemLoader;
 
-use Harx\Harx;
-use Harx\Loader\FilesystemLoader;
+    class Article
+    {
+        const NAME = 'Constant Name';
 
-// simple array
-$array = array();
-$array['title'] = 'I am the walrus';
-$array['artist'] = array('name' => 'The Beatles', 'homepage' => 'http://www.thebeatles.com');
+        protected $title;
+        protected $content;
+        protected $author;
+        protected $date;
 
-// simple object
-$object = new stdClass;
-$object->title = 'I am the walrus';
-$object->artist = array('name' => 'The Beatles', 'homepage' => 'http://www.thebeatles.com');
+        public function __construct($title, $content, $author, $date = null)
+        {
+            $this->title = $title;
+            $this->content = $content;
+            $this->author = $author;
+            $this->date = $date ?: new \DateTime;
+        }
 
-// article object
-$article = new Article('My article', 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', 'Me');
+        public function getTitle()
+        {
+            return $this->title;
+        }
 
-// render template
-$harx = new Harx(new FilesystemLoader([__DIR__]));
+        public function getContent()
+        {
+            return $this->content;
+        }
 
-function hello($str) { echo "Hello ".$str; };
+        public function getAuthor()
+        {
+            return $this->author;
+        }
 
-// $razr->addFunction('hello', 'hello');
+        public function getDate()
+        {
+            return $this->date;
+        }
+    }
 
-echo $harx->render('template.xhtml', array(
-    'name'    => 'World',
-    'pi'      => 3.14159265359,
-    'number'  => -5,
-    'now'     => new DateTime,
-    'array'   => $array,
-    'object'  => $object,
-    'article' => $article
-));
+
+    // simple array
+    $array = array();
+    $array['title'] = 'I am the walrus';
+    $array['artist'] = array('name' => 'The Beatles', 'homepage' => 'http://www.thebeatles.com');
+
+    // simple object
+    $object = new stdClass;
+    $object->title = 'I am the walrus';
+    $object->artist = array('name' => 'The Beatles', 'homepage' => 'http://www.thebeatles.com');
+
+    // article object
+    $article = new Article('My Blog Post', 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', 'Me');
+
+    // render template
+    $harx = new Harx(new FilesystemLoader([__DIR__]));
+
+    function hello($str) { echo "Hello ".$str; };
+
+    // $razr->addFunction('hello', 'hello');
+
+    echo $harx->render('template.xhtml', array(
+        'name'    => 'World!',
+        'pi'      => 3.14159265359,
+        'number'  => -5,
+        'now'     => new DateTime,
+        'array'   => $array,
+        'object'  => $object,
+        'article' => $article
+    ));

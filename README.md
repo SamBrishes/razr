@@ -15,7 +15,7 @@ Features
 -   Use **Loops** (`@each`, `@endeach`, `@for`, `@endfor`, `@while`, `@endwhile`)
 -   Define Parts (`@part`, `@endpart`) and Blocks (`@block`, `@enblock`) of Code
 -   Directly **Include** (`@include`), **Extend** (`@extend`) or **Embed** (`@embed`) Content
--   Register `<custom />` HTML tags, which gets rendered using your callback function.
+-   Register `<custom />` HTML tags, which gets rendered using your callback function
 -   **Caches everything** up to improve the performance and speed
 
 
@@ -32,7 +32,7 @@ Features
 -   A new configuration structure and environment
 -   A new caching system
 -   A new `Larx` called single-file drop-in library
--   And a few more changes...
+-   And a few more changes... View the CHANGELOG.md file for more...
 
 
 Versions

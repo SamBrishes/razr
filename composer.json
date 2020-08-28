@@ -44,7 +44,10 @@
         "psr-4": {
             "Harx\\": "src/Harx/",
             "Larx\\": "src/Larx/"
-        }
+        },
+        "files": [
+            "src/constants.php"
+        ]
     },
     "minimum-stability": "dev"
 }

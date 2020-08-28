@@ -19,6 +19,7 @@
     use Harx\Extension\CoreExtension;
     use Harx\Extension\ExtensionInterface;
     use Harx\Loader\LoaderInterface;
+    use Harx\Loader\FilesystemLoader;
     use Harx\Storage\FileStorage;
     use Harx\Storage\Storage;
     use Harx\Storage\StringStorage;
@@ -38,6 +39,18 @@
             "cache_path"    => "~/",        // Caching Path ~/ points to the template directory
             "charset"       => "UTF-8",     // Used Charset for Escaping
         ];
+
+        /*
+         |  CREATE FILE SYSTEM LOADER INSTANCE
+         |  @since  0.1.0
+         |
+         |  @param  multi   A single path as string, multiple as array.
+         |
+         |  @return object  The FileSystemLoader instance.
+         */
+        static public function fileLoader(/* string | array */ $paths): FilesystemLoader {
+            return new FilesystemLoader(is_string($paths)? [$paths]: $paths);
+        }
 
 
         /*
@@ -298,12 +311,10 @@
             }
 
             // Get Method
-            if(method_exists($class, $key) || method_exists($class, "__call")) {
+            if(method_exists($object, $key) || method_exists($class, "__call")) {
                 $callable = [$object, $key];
-            } else if(method_exists($class, "get$key")) {
-                $callable = [$object, "get$key"];
-            } else if(method_exists($class, "is$key")) {
-                $callable = [$object, "is$key"];
+            } else if(method_exists($object, "get" . ucfirst($key))) {
+                $callable = [$object, "get" . ucfirst($key)];
             } else {
                 return null;
             }
@@ -359,6 +370,7 @@
 
         /*
          |  RENDER A TEMPLATE
+         |  @since  0.1.0
          |
          |  @param  string  The template key.
          |  @param  array   Additinal global variables.
@@ -386,7 +398,21 @@
         }
 
         /*
+         |  RENDER AND PRINT A TEMPLATE
+         |  @since  0.1.0
+         |
+         |  @param  string  The template key.
+         |  @param  array   Additinal global variables.
+         |
+         |  @return string  The rendered template.
+         */
+        public function print(string $name, array $params = []): void {
+            print($this->render($name, $params));
+        }
+
+        /*
          |  EVALUATE A TEMPLATE
+         |  @since  0.1.0
          |
          |  @param  object  The template Storage instance.
          |  @param  array   The global parameters.
@@ -447,13 +473,17 @@
             if(!$this->init) {
                 $this->initialize();
             }
-            if(isset($this->cache[$name])) {
-                return $this->cache[$name];
+
+            // Prepare Cache
+            if($this->config->cache && $this->config->cache_path) {
+                $cache = sprintf('%s/%s.cache', $this->config->cache_path, sha1($name));
+            } else {
+                $cache = null;
             }
 
-            $cache = $this->config->cache_path? sprintf('%s/%s.cache', $this->config->cache_path, sha1($name)): null;
+            // Handle Storage
             if(!$cache) {
-                $storage = new StringStorage($this->compile($his->loader->getSource($name), $name));
+                $storage = new StringStorage($this->compile($this->loader->getSource($name), $name));
             } else {
                 if(!is_file($cache) || !$this->isTemplateFresh($name, filemtime($cache))) {
                     $this->writeCacheFile($cache, $this->compile($this->loader->getSource($name), $name));
@@ -486,6 +516,9 @@
          |  @return void
          */
         protected function writeCacheFile(string $file, string $content): void {
+            if(!$this->config->cache) {
+                return;
+            }
             $dir = dirname($file);
 
             if(!is_dir($dir)) {

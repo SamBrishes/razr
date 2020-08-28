@@ -106,7 +106,6 @@
             while(!$this->stream->test(T_CLOSE_TAG)) {
                 $return .= $this->parseExpression();
             }
-
             return "$return); ";
         }
 

@@ -32,13 +32,24 @@
         protected $controlEnd;
 
         /*
+         |  ALETERNATIVE CONTROL MAPPINGs
+         |  @type   array
+         */
+        protected $controlAlt;
+
+        /*
          |  CONSTRUCTOR
          |  @since  0.1.0
          */
         public function __construct() {
             $this->name = 'control';
-            $this->control = [T_FOR, T_FOREACH, T_IF, T_ELSEIF, T_ELSE, T_WHILE];
-            $this->controlEnd = [T_ENDFOR, T_ENDFOREACH, T_ENDIF, T_ENDWHILE];
+            $this->control = [T_FOR, T_FOREACH, T_EACH, T_IF, T_ELIF, T_ELSEIF, T_ELSE, T_WHILE];
+            $this->controlEnd = [T_ENDFOR, T_ENDFOREACH, T_ENDEACH, T_ENDIF, T_ENDWHILE];
+            $this->controlAlt = [
+                "elif"      => [T_ELSEIF, "elseif"],
+                "each"      => [T_FOREACH, "foreach"],
+                "endeach"   => [T_ENDFOREACH, "endforeach"]
+            ];
         }
 
         /*
@@ -53,13 +64,25 @@
         public function parse(TokenStream $stream, Token $token): ?String {
             $control = in_array($token->type, $this->control);
 
-            if ($control || in_array($token->type, $this->controlEnd)) {
+            // Replace Special Tokens
+            if(array_key_exists($token->value, $this->controlAlt)) {
+                $token->name = $this->controlAlt[$token->value][0];
+                $token->value = $this->controlAlt[$token->value][1];
+            }
+
+            // Get Return Value
+            if($control || in_array($token->type, $this->controlEnd)) {
                 $return = '';
 
                 while(!$stream->test(T_CLOSE_TAG)) {
+                    if((!$control || $token->type === T_ELSE) && !empty($return)) {
+                        $this->parser->parseExpression();
+                        continue;
+                    }
                     $return .= $this->parser->parseExpression();
                 }
 
+                // Remove ( )
                 if($control) {
                     $return .= ':';
                 }

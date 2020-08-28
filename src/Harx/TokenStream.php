@@ -45,10 +45,6 @@
         public function __construct(array $tokens) {
             $line = 0;
 
-            if(!defined("T_PUNCTUATION")) {
-                define("T_PUNCTUATION", -1);
-            }
-
             foreach($tokens AS $token) {
                 if(is_array($token)) {
                     $this->tokens[] = new Token($token[0], $token[1], $line = $token[2]);
