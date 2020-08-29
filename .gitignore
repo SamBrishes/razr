@@ -7,3 +7,6 @@
 # Ignore Cache
 *.cache
 /*/*.cache
+
+# Ignore Harx.io Website
+/web/
