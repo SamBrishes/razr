@@ -16,6 +16,7 @@
 
     // Pass Pseudo Blog Data
     $harx->setGlobal("blog", [
+        "url"           => "https://harx.io",
         "title"         => "My Blog Title",
         "description"   => "This is just an example to demonstrate the Harx templating engine using a common Blog environment.",
         "dateformat"    => "H:i -- d. F, Y"
@@ -82,7 +83,7 @@
 
     // Pass Pseudo Function
     $harx->setFunction("copyright", function() {
-        return "Copyright &copy; 2019 - " . date("Y") . " Harx.io";
+        return '<p>Copyright &copy; ' . date("Y") . ' <a href="https://harx.io">Harx.io</a></p>';
     });
 
     // Print Harx
