@@ -44,11 +44,11 @@
          |  CREATE FILE SYSTEM LOADER INSTANCE
          |  @since  0.1.0
          |
-         |  @param  multi   A single path as string, multiple as array.
+         |  @param  mixed   A single path as string, multiple as array.
          |
          |  @return object  The FileSystemLoader instance.
          */
-        static public function fileLoader(/* string | array */ $paths): FilesystemLoader {
+        static public function fileLoader(/* mixed */ $paths): FilesystemLoader {
             return new FilesystemLoader(is_string($paths)? [$paths]: $paths);
         }
 
@@ -120,7 +120,7 @@
         protected $cache = [ ];
 
         /*
-         |  CURRENT CONFIGURATION
+         |  INSTANCE CONFIGURATION
          |  @type   array | object
          */
         protected $config = [ ];
@@ -163,11 +163,11 @@
          |  @since  0.1.0
          |
          |  @param  string  The global variable key.
-         |  @param  multi   The global variable value.
+         |  @param  mixed   The global variable value.
          |
          |  @return object  The Harx instance itself.
          */
-        public function setGlobal(string $key, /* any */ $value): Harx {
+        public function setGlobal(string $key, /* mixed */ $value): Harx {
             $this->globals[$key] = $value;
             return $this;
         }
@@ -285,7 +285,7 @@
          |
          |  @return object  The Harx instance itself.
          */
-        public function setTag(string $tag, callable $callback) {
+        public function setTag(string $tag, callable $callback): Harx {
             if($this->init) {
                 throw new RuntimeException(sprintf("The Harx instance has already been initialized, unable to set the '%s' tag.", $tag));
             }
@@ -312,13 +312,13 @@
          |  @since  0.1.0
          |
          |  @param  name    The property / attribute key.
-         |  @param  multi   The target object or array.
+         |  @param  mixed   The target object or array.
          |  @param  array   Some additional arguments for constructs / classes.
          |  @param  string  The desired type to handle.
          |
-         |  @return multi   The respective attribute value or NULL if the key does not exist.
+         |  @return mixed   The respective attribute value or NULL if the key does not exist.
          */
-        public function getAttribute(string $key, /* any */ $object, array $args = [], string $type = self::ANY_CALL)/*: any */ {
+        public function getAttribute(string $key, /* mixed */ $object, array $args = [], string $type = self::ANY_CALL)/*: mixed */ {
             if($type === self::ANY_CALL || $type === self::ARRAY_CALL) {
                 $key = is_bool($key) || is_float($key)? (int) $key: $key;
 
@@ -365,10 +365,10 @@
          |  @param  string  The desired function key to apply.
          |  @param  array   The additional arguments for the function call.
          |
-         |  @return multi   The respective returning value from the function, or null if the
+         |  @return mixed   The respective returning value from the function, or null if the
          |                  function does not exist.
          */
-        public function applyFunction(string $key, array $args = [])/*: any */ {
+        public function applyFunction(string $key, array $args = [])/*: mixed */ {
             if(!array_key_exists($key, $this->functions)) {
                 return null;
             }

@@ -174,7 +174,7 @@
             if(isset($encoding)) {
                 mb_internal_encoding($encoding);
             }
-            return new Tokenstream(token_get_all($this->source));
+            return new TokenStream(token_get_all($this->source));
         }
 
         /*

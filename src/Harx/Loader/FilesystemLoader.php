@@ -101,7 +101,7 @@
             }
 
             $name = ltrim(strtr($name, '\\', '/'), '/');
-            foreach($this->paths as $path) {
+            foreach($this->paths AS $path) {
                 if(is_file($file = $path . DIRECTORY_SEPARATOR . $name)) {
                     return $file;
                 }
