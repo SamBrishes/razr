@@ -2,8 +2,9 @@ Harx Docs - @get( )
 ===================
 
 The get function allows you to receive a global variable and use it within block-scoped context,
-without changing the outer-scoped version. You can also map the variable to another one, using the
-syntax `@get( $variable AS $var )`.
+without changing the outer-scoped version. Using the `AS` statement you can also map the outer
+scoped variable to a local scoped one, as shown on the second example. Of course the new assigned
+variable is not available on the ouside scope.
 
 
 Example

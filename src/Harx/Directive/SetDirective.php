@@ -37,7 +37,7 @@
          |  @return string  The string directive representation or null.
          */
         public function parse(TokenStream $stream, Token $token): ?string {
-            if ($stream->nextIf('set') && $stream->expect('(')) {
+            if($stream->nextIf('set') && $stream->expect('(')) {
                 $return = '';
                 while (!$stream->test(T_CLOSE_TAG)) {
                     $return .= $this->parser->parseExpression();

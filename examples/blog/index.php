@@ -28,20 +28,61 @@
     ]);
 
     // Pass Pseudo WhereAmI View
-    $harx->setGlobal("view", "post");           // <!-- Change this to "home", to show the homepage
-    $harx->setGlobal("post", new Article([
-        "title"     => "Hello World!",
-        "author"    => "Harx User",
-        "content"   => "This is just a Lorem-Ipsum demonstration article, to show how the Harx templating engine uses them within the .xhtml template files.",
-        "date"      => date("Y-m-d H:i:s")
-    ]));
+    if(isset($_GET["post"]) && $_GET["post"] === 1) {
+        $harx->setGlobal("view", "post");
+        $harx->setGlobal("post", new Article([
+            "title"     => "Hello World!",
+            "author"    => "Harx User",
+            "content"   => "This is just a Lorem-Ipsum demonstration article, to show how the Harx templating engine uses them within the .xhtml template files.",
+            "date"      => date("Y-m-d H:i:s")
+        ]));
+    } else if(!isset($_GET["post"])) {
+        $harx->setGlobal("view", "home");
+        $harx->setGlobal("posts", [
+            new Article([
+                "id"        => 4,
+                "title"     => "Hello World!",
+                "author"    => "Harx User",
+                "content"   => "This is just a Lorem-Ipsum demonstration article, to show how the Harx templating engine uses them within the .xhtml template files.",
+                "date"      => date("Y-m-d H:i:s")
+            ]),
+            new Article([
+                "id"        => 3,
+                "title"     => "Hello World!",
+                "author"    => "Harx User",
+                "content"   => "This is just a Lorem-Ipsum demonstration article, to show how the Harx templating engine uses them within the .xhtml template files.",
+                "date"      => date("Y-m-d H:i:s")
+            ]),
+            new Article([
+                "id"        => 2,
+                "title"     => "Hello World!",
+                "author"    => "Harx User",
+                "content"   => "This is just a Lorem-Ipsum demonstration article, to show how the Harx templating engine uses them within the .xhtml template files.",
+                "date"      => date("Y-m-d H:i:s")
+            ]),
+            new Article([
+                "id"        => 1,
+                "title"     => "Hello World!",
+                "author"    => "Harx User",
+                "content"   => "This is just a Lorem-Ipsum demonstration article, to show how the Harx templating engine uses them within the .xhtml template files.",
+                "date"      => date("Y-m-d H:i:s")
+            ])
+        ]);
+    }
+
+    // Pass Pseudo Custom Tag
+    $harx->setTag("harx:header", function(array $attributes = [ ], string $content = "", string $return = "") {
+        if(empty($content) && empty($attributes)) {
+            return "1";
+        } else if(empty($content)) {
+            return "2";
+        }
+        return "3";
+    });
 
     // Pass Pseudo Function
-    $harx->setFunction("greetings", function() {
-
-        if(date("H"))
-
-        return "Good to see you!";
+    $harx->setFunction("copyright", function() {
+        return "Copyright &copy; 2019 - " . date("Y") . " Harx.io";
     });
 
     // Print Harx

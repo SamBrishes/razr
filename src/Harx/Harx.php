@@ -108,6 +108,12 @@
         public $extensions = [ ];
 
         /*
+         |  GLOBAL CUSTOM TAGs
+         |  @type   array
+         */
+        public $tags = [ ];
+
+        /*
          |  CACHE ARRAY
          |  @type   array
          */
@@ -270,7 +276,36 @@
             return $this->extensions[$key] ?? null;
         }
 
-        static protected $classes = [];
+        /*
+         |  SET CUSTOM TAG
+         |  @since  0.1.0
+         |
+         |  @param  string  The tag name.
+         |  @param  callb.  The callback function, which is used to render the occurrences.
+         |
+         |  @return object  The Harx instance itself.
+         */
+        public function setTag(string $tag, callable $callback) {
+            if($this->init) {
+                throw new RuntimeException(sprintf("The Harx instance has already been initialized, unable to set the '%s' tag.", $tag));
+            }
+
+            // Set & Return
+            $this->tags[$tag] = $callback;
+            return $this;
+        }
+
+        /*
+         |  GET CUSTOM TAG
+         |  @since  0.1.0
+         |
+         |  @param  string  The tag name.
+         |
+         |  @return callb.  The callback function or null.
+         */
+        public function getTag(string $tag): ?callable {
+            return $this->tags[$tag] ?? null;
+        }
 
         /*
          |  GET VALUE FROM OBJECT / ARRAY / CONSTRUCT

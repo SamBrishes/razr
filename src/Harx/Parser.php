@@ -91,6 +91,28 @@
             } else {
                 $info = sprintf("<?php /* %s */ ?>", $this->filename);
             }
+
+            foreach($this->engine->tags AS $tag => $cb) {
+                $return = preg_replace_callback("/\<$tag([^>]*?)(\/>|>(.*?)<\/$tag>)/", function($matches) use ($cb) {
+                    $return = $matches[0];
+                    $inner = count($matches) === 4? trim($matches[3]): "";
+
+                    // Parse Parameters
+                    $params = [];
+                    if(!empty(trim($matches[1]))) {
+                        foreach(explode(" ", trim($matches[1])) AS $param) {
+                            [$key, $value] = array_pad(explode("=", $param, 2), 2, true);
+                            if($value[0] === '"' || $value[0] === "'") {
+                                $value = substr($value, 1, -1);
+                            }
+                            $params[$key] = $value;
+                        }
+                    }
+
+                    // Return Callback
+                    return call_user_func($cb, $params, $inner, $return);
+                }, $return);
+            }
             return $info . $return;
         }
 

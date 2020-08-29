@@ -11,7 +11,9 @@
     </head>
     <body>
         <div class="container">
-
+            <harx:header />
+            <harx:header attr="value" />
+            <harx:header attr="value" attr2="value"> content </harx:header>
         </div>
 
         <div class="container mx-auto py-3">
@@ -33,12 +35,21 @@
             <div class="row">
                 <div class="column">
                     @if( $view === "home" )
-                        HomePage
+                        @include( "list.xhtml" )
                     @elif( $view === "post" )
                         @include( "article.xhtml" )
                     @else( )
                         404
                     @endif( )
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="column text-center py-3">
+                    <hr />
+                    @( copyright() )
                 </div>
             </div>
         </div>

@@ -43,8 +43,8 @@
          */
         public function __construct() {
             $this->name = 'control';
-            $this->control = [T_FOR, T_FOREACH, T_EACH, T_IF, T_ELIF, T_ELSEIF, T_ELSE, T_WHILE];
-            $this->controlEnd = [T_ENDFOR, T_ENDFOREACH, T_ENDEACH, T_ENDIF, T_ENDWHILE];
+            $this->control = [T_FOR, T_FOREACH, T_IF, T_ELSEIF, T_ELSE, T_WHILE];
+            $this->controlEnd = [T_ENDFOR, T_ENDFOREACH, T_ENDIF, T_ENDWHILE];
             $this->controlAlt = [
                 "elif"      => [T_ELSEIF, "elseif"],
                 "each"      => [T_FOREACH, "foreach"],
@@ -62,13 +62,11 @@
          |  @return string  The string directive representation or null.
          */
         public function parse(TokenStream $stream, Token $token): ?String {
-            $control = in_array($token->type, $this->control);
-
-            // Replace Special Tokens
             if(array_key_exists($token->value, $this->controlAlt)) {
-                $token->name = $this->controlAlt[$token->value][0];
+                $token->type = $this->controlAlt[$token->value][0];
                 $token->value = $this->controlAlt[$token->value][1];
             }
+            $control = in_array($token->type, $this->control);
 
             // Get Return Value
             if($control || in_array($token->type, $this->controlEnd)) {
