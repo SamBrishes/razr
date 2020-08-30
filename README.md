@@ -113,7 +113,6 @@ The Basic / Core Syntax contains the following directives and commands.
 
 - [@( )](https://harx.io/docs/@)
 - [@e( )](https://harx.io/docs/@e)
-- [@escape( )](https://harx.io/docs/@escape)
 - [@raw( )](https://harx.io/docs/@raw)
 - [@dump( )](https://harx.io/docs/@dump)
 - [@json( )](https://harx.io/docs/@json)
